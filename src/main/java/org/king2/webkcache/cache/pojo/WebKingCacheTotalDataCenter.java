@@ -1,16 +1,19 @@
-package com.king2.webkcache.cache.pojo;
+package org.king2.webkcache.cache.pojo;
 
-import com.king2.webkcache.cache.definition.CacheDefinition;
+import org.king2.webkcache.cache.definition.CacheDefinition;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-/*=======================================================
-	说明:  WebKCache总的数据中心
-
-	作者		时间					            注释
-  	俞烨		19-10-14                         创建
-=======================================================*/
-public class WebKCacheTotalDataCenter {
+/**
+ * =======================================================
+ * 说明:  WebKCache总的数据中心
+ * <p>
+ * 作者		时间					            注释
+ *
+ * @author 俞烨        19-10-14                         创建
+ * =======================================================
+ */
+public class WebKingCacheTotalDataCenter {
 
     // 为了提供一个长时间存储的Web缓存 我们需要将使用单例模式
     // 单例模式是什么具体请百度
@@ -27,6 +30,6 @@ public class WebKCacheTotalDataCenter {
      * @return ConcurrentHashMap<String, Object>
      */
     public static ConcurrentHashMap<String, CacheDefinition> getTypeIsObjCacheData() {
-        return WebKCacheTypeIsObjDataCenter.getInstance().getDatasMap();
+        return WebKingCacheTypeIsObjDataCenter.getInstance().getDatasMap();
     }
 }

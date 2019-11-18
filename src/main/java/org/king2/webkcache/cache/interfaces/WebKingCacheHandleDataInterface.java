@@ -1,12 +1,15 @@
-package com.king2.webkcache.cache.interfaces;
+package org.king2.webkcache.cache.interfaces;
 
-/*=======================================================
-	说明:  WebKCache操作数据的接口
-
-	作者		时间					            注释
-  	俞烨		19-10-14                         创建
-=======================================================*/
-public interface WebKCacheHandleDataInterface {
+/**
+ * =======================================================
+ * 说明:  WebKCache操作数据的接口
+ * <p>
+ * 作者		时间					            注释
+ *
+ * @author 俞烨        19-10-14                         创建
+ * =======================================================
+ */
+public interface WebKingCacheHandleDataInterface {
 
     /**
      * 将数据放入缓存中  这是一个万能的Set方法
@@ -14,16 +17,23 @@ public interface WebKCacheHandleDataInterface {
      * 这个方法不提供自己失效的时间  但是系统提供了一个缓存监视器'CountCurrentCacheIfPastTypeObj'
      * CountCurrentCacheIfPastTypeObj监视器会根据用户配置的毫秒数来监听这个数据是否需要删除  是否需要回收,以此达到释放内存的效果。
      * 如果这个缓存数据要一直存储在内存中可以将参数@Param saveFlag 设置成true这样就会永远保存在内存中,
-     *      也可以调用set(String key, Object value) 方法 这个方法也是将缓存数据永久存在内存中。
+     * 也可以调用set(String key, Object value) 方法 这个方法也是将缓存数据永久存在内存中。
      *
      * @param key   缓存中的key
      * @param value 缓存中的值
-     * @Param saveFlag 数据是否永久存在
      * @return
+     * @Param saveFlag 数据是否永久存在
      */
     Object set(String key, Object value, boolean saveFlag) throws Exception;
 
-    // 参照 set(String key, Object value, boolean saveFlag) throws Exception;的注释
+    /**
+     * 参照 set(String key, Object value, boolean saveFlag) throws Exception;的注释
+     *
+     * @param key
+     * @param value
+     * @return
+     * @throws Exception
+     */
     Object set(String key, Object value) throws Exception;
 
     /**

@@ -1,32 +1,35 @@
-package com.king2.webkcache.cache.interfaces.impl;
+package org.king2.webkcache.cache.interfaces.impl;
 
-import com.king2.webkcache.cache.appoint.WebCacheTypeIsObjAppoint;
-import com.king2.webkcache.cache.interfaces.WebKCacheHandleDataInterface;
-import com.king2.webkcache.cache.pojo.WebKCacheTypeIsObjDataCenter;
-import com.king2.webkcache.cache.timer.CountCurrentCacheIfPastTypeObj;
-import com.king2.webkcache.cache.definition.CacheDefinition;
-import com.king2.webkcache.cache.lock.WebKCacheTypeIsObjectLock;
+import org.king2.webkcache.cache.appoint.WebCacheTypeIsObjAppoint;
+import org.king2.webkcache.cache.interfaces.WebKingCacheHandleDataInterface;
+import org.king2.webkcache.cache.pojo.WebKingCacheTypeIsObjDataCenter;
+import org.king2.webkcache.cache.timer.CountCurrentCacheIfPastTypeObj;
+import org.king2.webkcache.cache.definition.CacheDefinition;
+import org.king2.webkcache.cache.lock.WebKingCacheTypeIsObjectLock;
 
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-/*=======================================================
-	说明:  可以WebKCache缓存接口的实现类 类型为Obj
-
-	作者		时间					            注释
-  	俞烨		19-10-14                         创建
-=======================================================*/
-public class WebKCacheTypeIsObjImpl implements WebKCacheHandleDataInterface {
+/**
+ * =======================================================
+ * 说明:  可以WebKCache缓存接口的实现类 类型为Obj
+ * <p>
+ * 作者		时间					            注释
+ *
+ * @author 俞烨        19-10-14                         创建
+ * =======================================================
+ */
+public class WebKingCacheTypeIsObjImpl implements WebKingCacheHandleDataInterface {
 
     // 提供超时的构造
-    public WebKCacheTypeIsObjImpl() {
+    public WebKingCacheTypeIsObjImpl() {
         this(1000 * 60 * 60 * 2);
     }
 
-    public WebKCacheTypeIsObjImpl(Integer timeout) {
+    public WebKingCacheTypeIsObjImpl(Integer timeout) {
         if (timeout != null) {
-            WebKCacheTypeIsObjDataCenter.timeout = timeout;
+            WebKingCacheTypeIsObjDataCenter.timeout = timeout;
         }
     }
 
@@ -43,6 +46,7 @@ public class WebKCacheTypeIsObjImpl implements WebKCacheHandleDataInterface {
      * @return
      * @Param saveFlag 数据是否永久存在
      */
+    @Override
     public Object set(String key, Object value, boolean saveFlag) throws Exception {
 
         /*
@@ -52,11 +56,11 @@ public class WebKCacheTypeIsObjImpl implements WebKCacheHandleDataInterface {
 
 
         // 创建读写分离锁
-        ReentrantReadWriteLock lock = WebKCacheTypeIsObjectLock.getInstance().getLock();
+        ReentrantReadWriteLock lock = WebKingCacheTypeIsObjectLock.getLock();
         lock.writeLock().lock();
         try {
             // 获取类型为Obj的缓存数据
-            WebKCacheTypeIsObjDataCenter objInstance = WebKCacheTypeIsObjDataCenter.getInstance();
+            WebKingCacheTypeIsObjDataCenter objInstance = WebKingCacheTypeIsObjDataCenter.getInstance();
             // 开启锁 防止多线程的环境下数据不安全的问题
 
             // 创建返回的数据
@@ -85,7 +89,7 @@ public class WebKCacheTypeIsObjImpl implements WebKCacheHandleDataInterface {
                 // 开启计时器
                 CountCurrentCacheIfPastTypeObj.openTimers();
                 // 唤醒
-                WebKCacheTypeIsObjectLock.writeCondition().signalAll();
+                WebKingCacheTypeIsObjectLock.writeCondition().signalAll();
             }
             return returnObj == null ? null : returnObj.object;
         } catch (Exception e) {
@@ -95,8 +99,10 @@ public class WebKCacheTypeIsObjImpl implements WebKCacheHandleDataInterface {
         }
     }
 
-    // 参照 set(String key, Object value, boolean saveFlag) throws Exception;的注释
-    // 默认这个缓存对象是交给缓存监视器管理的
+    /**
+     * 参照 set(String key, Object value, boolean saveFlag) throws Exception;的注释
+     * 默认这个缓存对象是交给缓存监视器管理的
+     */
     @Override
     public Object set(String key, Object value) throws Exception {
         return set(key, value, false);
@@ -108,7 +114,7 @@ public class WebKCacheTypeIsObjImpl implements WebKCacheHandleDataInterface {
      */
     public void cr() {
         // 获取类型为Obj的缓存数据
-        WebKCacheTypeIsObjDataCenter objInstance = WebKCacheTypeIsObjDataCenter.getInstance();
+        WebKingCacheTypeIsObjDataCenter objInstance = WebKingCacheTypeIsObjDataCenter.getInstance();
         objInstance.notifyAll();
     }
 
@@ -128,12 +134,12 @@ public class WebKCacheTypeIsObjImpl implements WebKCacheHandleDataInterface {
         // ----------------------------------------------------------------------
 
         // 获取类型为Obj的缓存数据
-        WebKCacheTypeIsObjDataCenter objInstance = WebKCacheTypeIsObjDataCenter.getInstance();
+        WebKingCacheTypeIsObjDataCenter objInstance = WebKingCacheTypeIsObjDataCenter.getInstance();
         // 由于Get()和Set()方法操作的是同一个缓存数据 所以他们加的锁类型也应该是一致的 否则就会出现安全隐患
 
 
         // 创建读写分离锁
-        ReentrantReadWriteLock lock = WebKCacheTypeIsObjectLock.getInstance().getLock();
+        ReentrantReadWriteLock lock = WebKingCacheTypeIsObjectLock.getInstance().getLock();
         lock.readLock().lock();
         try {
             // 开启锁成功 查询Key是否属于规范
