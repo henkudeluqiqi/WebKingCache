@@ -1,7 +1,8 @@
 package org.king2.webkcache.cache.interfaces.impl;
 
 import org.king2.webkcache.cache.appoint.WebCacheTypeIsObjAppoint;
-import org.king2.webkcache.cache.interfaces.WebKingCacheHandleDataInterface;
+import org.king2.webkcache.cache.enums.WebKingCacheFactoryEnum;
+import org.king2.webkcache.cache.interfaces.WebKingCache;
 import org.king2.webkcache.cache.pojo.WebKingCacheTypeIsObjDataCenter;
 import org.king2.webkcache.cache.timer.CountCurrentCacheIfPastTypeObj;
 import org.king2.webkcache.cache.definition.CacheDefinition;
@@ -13,24 +14,27 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * =======================================================
- * 说明:  可以WebKCache缓存接口的实现类 类型为Obj
+ * 说明:
+ * 这是一个线程安全的WebKingCache实现类 用户在高并发的时候不用担心数据的安全
+ * 因为这个类，已经完成了同步的处理，使用者只需要关心自己的业务逻辑即可。
  * <p>
  * 作者		时间					            注释
  *
  * @author 俞烨        19-10-14                         创建
  * =======================================================
  */
-public class WebKingCacheTypeIsObjImpl implements WebKingCacheHandleDataInterface {
+public class ConcurrentWebCache implements WebKingCache {
 
     // 提供超时的构造
-    public WebKingCacheTypeIsObjImpl() {
+    public ConcurrentWebCache() {
         this(1000 * 60 * 60 * 2);
     }
 
-    public WebKingCacheTypeIsObjImpl(Integer timeout) {
+    public ConcurrentWebCache(Integer timeout) {
         if (timeout != null) {
             WebKingCacheTypeIsObjDataCenter.timeout = timeout;
         }
+
     }
 
     /**
@@ -57,11 +61,11 @@ public class WebKingCacheTypeIsObjImpl implements WebKingCacheHandleDataInterfac
 
         // 创建读写分离锁
         ReentrantReadWriteLock lock = WebKingCacheTypeIsObjectLock.getLock();
+        // 开启锁 防止多线程的环境下数据不安全的问题
         lock.writeLock().lock();
         try {
             // 获取类型为Obj的缓存数据
             WebKingCacheTypeIsObjDataCenter objInstance = WebKingCacheTypeIsObjDataCenter.getInstance();
-            // 开启锁 防止多线程的环境下数据不安全的问题
 
             // 创建返回的数据
             CacheDefinition returnObj = null;
@@ -164,4 +168,7 @@ public class WebKingCacheTypeIsObjImpl implements WebKingCacheHandleDataInterfac
         }
 
     }
+
 }
+
+

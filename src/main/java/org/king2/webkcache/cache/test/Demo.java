@@ -1,6 +1,6 @@
 package org.king2.webkcache.cache.test;
 
-import org.king2.webkcache.cache.interfaces.impl.WebKingCacheTypeIsObjImpl;
+import org.king2.webkcache.cache.interfaces.impl.ConcurrentWebCache;
 
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,7 +15,7 @@ public class Demo {
 
     public static void main(String[] args) throws Exception {
 
-        WebKingCacheTypeIsObjImpl webKCacheTypeIsObj = new WebKingCacheTypeIsObjImpl(10000);
+        ConcurrentWebCache webKCacheTypeIsObj = new ConcurrentWebCache(10000);
 
         Random random = new Random();
 

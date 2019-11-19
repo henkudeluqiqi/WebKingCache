@@ -1,5 +1,8 @@
 package org.king2.webkcache.cache.interfaces;
 
+import com.sun.istack.internal.NotNull;
+import org.springframework.lang.Nullable;
+
 /**
  * =======================================================
  * 说明:  WebKCache操作数据的接口
@@ -39,6 +42,7 @@ public interface WebKingCache {
     /**
      * 调用CacheRecycle缓存回收期
      */
+    @Nullable
     void cr();
 
     /**
@@ -48,4 +52,5 @@ public interface WebKingCache {
      * @return
      */
     Object get(String key) throws Exception;
+
 }
