@@ -9,7 +9,7 @@ package org.king2.webkcache.cache.interfaces;
  * @author 俞烨        19-10-14                         创建
  * =======================================================
  */
-public interface WebKingCacheHandleDataInterface {
+public interface WebKingCache {
 
     /**
      * 将数据放入缓存中  这是一个万能的Set方法
