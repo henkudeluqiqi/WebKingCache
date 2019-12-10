@@ -1,6 +1,5 @@
 package org.king2.webkcache.cache.interfaces;
 
-import com.sun.istack.internal.NotNull;
 import org.springframework.lang.Nullable;
 
 /**
@@ -9,7 +8,7 @@ import org.springframework.lang.Nullable;
  * <p>
  * 作者		时间					            注释
  *
- * @author 俞烨        19-10-14                         创建
+ * @author   鹿七        19-10-14                         创建
  * =======================================================
  */
 public interface WebKingCache {
@@ -42,7 +41,6 @@ public interface WebKingCache {
     /**
      * 调用CacheRecycle缓存回收期
      */
-    @Nullable
     void cr();
 
     /**
