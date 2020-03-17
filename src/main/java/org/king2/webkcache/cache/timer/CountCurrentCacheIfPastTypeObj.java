@@ -56,11 +56,11 @@ public class CountCurrentCacheIfPastTypeObj {
      */
     public static void openTimers() {
 
-        /*
-            打开计时器 我们需要用到和添加数据的同一把锁 因为这样才能控制住安全问题 不会引起多线程的一些毛病
-            创建读写分离锁
+        /**
+         * 打开计时器 我们需要用到和添加数据的同一把锁 因为这样才能控制住安全问题 不会引起多线程的一些毛病
+         * 创建读写分离锁
+         * 开启一条新的线程以免他会干扰到主线程
          */
-
         new Thread(() -> {
             ReentrantReadWriteLock lock = WebKingCacheTypeIsObjectLock.getLock();
             lock.writeLock().lock();
@@ -69,7 +69,6 @@ public class CountCurrentCacheIfPastTypeObj {
                 // 开启锁以后开始判断当前计时器是否已经启动 如果当前计时器的状态为true  那么就不行对这个计时器进行操作
                 if (!ifActive.get()) {
                     ifActive.set(true);
-                    // 开启一条新的线程以免他会干扰到主线程
                     // 未开启  我们进来以后需要将状态设置为启动
                     while (true) {
                         lock.writeLock().lock();

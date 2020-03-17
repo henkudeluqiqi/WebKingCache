@@ -17,35 +17,28 @@ public class Demo {
 
         ConcurrentWebCache webKCacheTypeIsObj = new ConcurrentWebCache(10000);
 
-        Random random = new Random();
 
-        for (int i = 0; i < 10; i++) {
-            new Thread(() -> {
-                try {
-                    for (int i1 = 0; i1 < 100; i1++) {
-                        webKCacheTypeIsObj.set(random.nextInt(10000000) + "", random.nextInt(10000000));
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }).start();
-        }
-
-        ConcurrentHashMap<String, String> test = new ConcurrentHashMap<>();
-        while (true) {
-            if (test.size() > 10) {
-                continue;
-            }
-            String s = random.nextInt(10000000) + "";
-            Object o = webKCacheTypeIsObj.get(s);
-
-            if (o != null) {
-                System.out.println("key" + s);
-                System.out.println(o);
-                test.put(s, s);
-            }
-
-        }
-
+        webKCacheTypeIsObj.set("鹿七七", 23, false, 5000);
+        webKCacheTypeIsObj.set("鹿七七2", 23);
+        webKCacheTypeIsObj.set("鹿七七3", 23, false, 400);
+        webKCacheTypeIsObj.set("鹿七七4", 23, false, 600);
+        Thread.sleep(500);
+        System.out.println(webKCacheTypeIsObj.get("鹿七七"));
+        System.out.println(webKCacheTypeIsObj.get("鹿七七2"));
+        System.out.println(webKCacheTypeIsObj.get("鹿七七3"));
+        System.out.println(webKCacheTypeIsObj.get("鹿七七4"));
+        System.out.println(webKCacheTypeIsObj.size());
+        webKCacheTypeIsObj.cr();
+        Thread.sleep(1000);
+        System.out.println(webKCacheTypeIsObj.get("鹿七七4"));
+        System.out.println(webKCacheTypeIsObj.size());
+        System.out.println(webKCacheTypeIsObj.remove("鹿七七4"));
+        System.out.println(webKCacheTypeIsObj.size());
+        System.out.println(webKCacheTypeIsObj.remove("鹿七七2"));
+        System.out.println(webKCacheTypeIsObj.size());
+        Thread.sleep(10000);
+        System.out.println("---------------------------------------------");
+        System.out.println(webKCacheTypeIsObj.size());
+        System.out.println(webKCacheTypeIsObj.get("鹿七七"));
     }
 }

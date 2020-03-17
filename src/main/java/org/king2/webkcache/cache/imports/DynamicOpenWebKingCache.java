@@ -3,6 +3,7 @@ package org.king2.webkcache.cache.imports;
 import org.king2.webkcache.cache.annotation.EnableWebKingCache;
 import org.king2.webkcache.cache.exceptions.BeanFactoryCaseError;
 import org.king2.webkcache.cache.interfaces.impl.ConcurrentWebCache;
+import org.king2.webkcache.cache.interfaces.impl.DefaultWebKingCache;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -47,8 +48,10 @@ public class DynamicOpenWebKingCache implements ImportBeanDefinitionRegistrar {
             }
             // 创建默认的数据
             ConcurrentWebCache webKingCacheTypeIsObj = new ConcurrentWebCache(timeout);
+            DefaultWebKingCache defaultWebKingCache = new DefaultWebKingCache(timeout);
             // 注册到BeanFactory中的BeanDefinition中。
-            beanFactory.registerSingleton("webKingCache", webKingCacheTypeIsObj);
+            beanFactory.registerSingleton("concurrentCache", webKingCacheTypeIsObj);
+            beanFactory.registerSingleton("defaultWebKingCache", defaultWebKingCache);
         } else {
             try {
                 throw new BeanFactoryCaseError("BeanFactory转换异常");

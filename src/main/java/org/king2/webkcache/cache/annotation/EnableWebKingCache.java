@@ -1,6 +1,7 @@
 package org.king2.webkcache.cache.annotation;
 
 import org.king2.webkcache.cache.imports.DynamicOpenWebKingCache;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.Retention;

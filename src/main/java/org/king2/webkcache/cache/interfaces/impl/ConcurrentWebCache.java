@@ -23,6 +23,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * @author 俞烨        19-10-14                         创建
  * =======================================================
  */
+@Deprecated
 public class ConcurrentWebCache implements WebKingCache {
 
     // 提供超时的构造
@@ -58,7 +59,6 @@ public class ConcurrentWebCache implements WebKingCache {
         使用者只管一个使用 中间的操作都由WebKCache帮你实现
          */
 
-
         // 创建读写分离锁
         ReentrantReadWriteLock lock = WebKingCacheTypeIsObjectLock.getLock();
         // 开启锁 防止多线程的环境下数据不安全的问题
@@ -79,7 +79,6 @@ public class ConcurrentWebCache implements WebKingCache {
 
             // 将数据存入缓存中
             CacheDefinition definition = new CacheDefinition();
-            definition.isPereExist.set(saveFlag);
             definition.object = value;
             definition.isHandTimer.set(!saveFlag);
             cacheData.put(key, definition);
@@ -166,9 +165,23 @@ public class ConcurrentWebCache implements WebKingCache {
         } finally {
             lock.readLock().unlock();
         }
-
     }
 
+
+    @Override
+    public Object set(String key, Object value, boolean saveFlag, Integer timeout) throws Exception {
+        return null;
+    }
+
+    @Override
+    public Object remove(String key) {
+        return null;
+    }
+
+    @Override
+    public int size() {
+        return 0;
+    }
 }
 
 
