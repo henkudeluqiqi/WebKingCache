@@ -1,5 +1,8 @@
 package org.king2.webkcache.cache.interfaces;
 
+import com.sun.istack.internal.NotNull;
+import org.springframework.lang.Nullable;
+
 /**
  * =======================================================
  * 说明:  WebKCache操作数据的接口
@@ -24,21 +27,10 @@ public interface WebKingCache {
      * @return
      * @Param saveFlag 数据是否永久存在
      */
-    Object set(String key, Object value, boolean saveFlag, Integer timeout) throws Exception;
-
-    /**
-     * 参照 set(String key, Object value, boolean saveFlag , int timeout) throws Exception;的注释
-     *
-     * @param key
-     * @param value
-     * @return
-     * @throws Exception
-     */
     Object set(String key, Object value, boolean saveFlag) throws Exception;
 
-
     /**
-     * 参照 set(String key, Object value, boolean saveFlag , int timeout) throws Exception;的注释
+     * 参照 set(String key, Object value, boolean saveFlag) throws Exception;的注释
      *
      * @param key
      * @param value
@@ -50,6 +42,7 @@ public interface WebKingCache {
     /**
      * 调用CacheRecycle缓存回收期
      */
+    @Nullable
     void cr();
 
     /**
@@ -60,18 +53,4 @@ public interface WebKingCache {
      */
     Object get(String key) throws Exception;
 
-    /**
-     * 根据key删除值
-     *
-     * @param key
-     * @return
-     */
-    Object remove(String key);
-
-    /**
-     * 获取长度
-     *
-     * @return
-     */
-    int size();
 }
