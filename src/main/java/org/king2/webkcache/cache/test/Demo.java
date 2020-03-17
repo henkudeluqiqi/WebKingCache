@@ -1,9 +1,11 @@
 package org.king2.webkcache.cache.test;
 
-import org.king2.webkcache.cache.interfaces.impl.ConcurrentWebCache;
+import org.king2.webkcache.cache.interfaces.impl.DefaultWebKingCache;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /*=======================================================
 	说明:
@@ -13,7 +15,76 @@ import java.util.concurrent.ConcurrentHashMap;
 =======================================================*/
 public class Demo {
 
+    /*public static void main(String[] args) throws InterruptedException {
+        ConcurrentHashMap c = new ConcurrentHashMap();
+        AtomicInteger integer = new AtomicInteger();
+        List<Thread> threads = new ArrayList<>();
+        Random random = new Random();
+        for (int i = 0; i < 10; i++) {
+            threads.add(new Thread(() -> {
+                for (int i1 = 0; i1 < 1000000; i1++) {
+                    try {
+                        c.put(integer.addAndGet(1) + "鹿七", i1);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }));
+        }
+
+        for (Thread thread : threads) {
+            thread.start();
+        }
+        long l = System.currentTimeMillis();
+        for (Thread thread : threads) {
+            thread.join();
+        }
+        long l1 = System.currentTimeMillis();
+        System.out.println(l1 - l);
+
+    }*/
+
     public static void main(String[] args) throws Exception {
+        AtomicInteger integer = new AtomicInteger();
+        DefaultWebKingCache cache = new DefaultWebKingCache(10000);
+        List<Thread> threads = new ArrayList<>();
+        Random random = new Random();
+        for (int i = 0; i < 3; i++) {
+            threads.add(new Thread(() -> {
+                for (int i1 = 0; i1 < 1000000; i1++) {
+                    try {
+                        cache.set(integer.addAndGet(1) + "鹿七", i1);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }));
+        }
+
+        for (Thread thread : threads) {
+            thread.start();
+        }
+        long l = System.currentTimeMillis();
+        for (Thread thread : threads) {
+            thread.join();
+        }
+        long l1 = System.currentTimeMillis();
+        System.out.println(l1 - l);
+        System.out.println(cache.size());
+
+        l = System.currentTimeMillis();
+        System.out.println("get结果" + cache.get("10000鹿七"));
+        l1 = System.currentTimeMillis();
+        System.out.println(l1 - l);
+
+        l = System.currentTimeMillis();
+        System.out.println("remove结果" + cache.remove("10000鹿七"));
+        l1 = System.currentTimeMillis();
+        System.out.println(l1 - l);
+        System.out.println(cache.size());
+    }
+
+   /* public static void main(String[] args) throws Exception {
 
         ConcurrentWebCache webKCacheTypeIsObj = new ConcurrentWebCache(10000);
 
@@ -40,5 +111,5 @@ public class Demo {
         System.out.println("---------------------------------------------");
         System.out.println(webKCacheTypeIsObj.size());
         System.out.println(webKCacheTypeIsObj.get("鹿七七"));
-    }
+    }*/
 }

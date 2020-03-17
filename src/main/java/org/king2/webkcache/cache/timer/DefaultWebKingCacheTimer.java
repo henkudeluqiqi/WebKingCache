@@ -1,6 +1,7 @@
 package org.king2.webkcache.cache.timer;
 
 import org.king2.webkcache.cache.interfaces.impl.ConcurrentWebCache;
+import org.king2.webkcache.cache.interfaces.impl.DefaultWebKingCache;
 import org.king2.webkcache.cache.lock.SubSectionLock;
 import org.king2.webkcache.cache.pojo.ReadWritePojo;
 import org.springframework.util.CollectionUtils;
@@ -65,7 +66,7 @@ public class DefaultWebKingCacheTimer {
                                 // 删除对应的数据
                                 currentKeyLock.data.remove(k);
                                 TIME.remove(k);
-                                ConcurrentWebCache.SIZE.addAndGet(-1);
+                                DefaultWebKingCache.SIZE.addAndGet(-1);
                             }
                         } catch (Exception e) {
                             e.printStackTrace();

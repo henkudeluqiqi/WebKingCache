@@ -9,6 +9,7 @@ import org.king2.webkcache.cache.pojo.WebKingCacheTypeIsObjDataCenter;
 import org.king2.webkcache.cache.timer.DefaultWebKingCacheTimer;
 
 import java.util.Date;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -57,7 +58,6 @@ public class DefaultWebKingCache implements WebKingCache {
 
         // 校验值是否正确 是否为空
         WebCacheTypeIsObjAppoint.checkKeyIsEmpty(key);
-
         // 获取锁
         ReadWritePojo lock = SubSectionLock.getLock(key);
         lock.reentrantReadWriteLock.writeLock().lock();
@@ -66,14 +66,14 @@ public class DefaultWebKingCache implements WebKingCache {
             // 创建返回的数据
             CacheDefinition returnObj = null;
             // 校验通过首先获取到返回的值
-            returnObj = lock.data.get(key);
+            ConcurrentHashMap<String, CacheDefinition> data = lock.data;
 
             // 初始化对象的信息
             CacheDefinition cacheDefinition = new CacheDefinition(value, saveFlag, timeout);
 
             // 将信息存入数据中
-            CacheDefinition put = lock.data.put(key, cacheDefinition);
-            if (put == null) {
+            returnObj = data.put(key, cacheDefinition);
+            if (returnObj == null) {
                 SIZE.getAndIncrement();
             }
 
@@ -93,6 +93,7 @@ public class DefaultWebKingCache implements WebKingCache {
         } finally {
             lock.reentrantReadWriteLock.writeLock().unlock();
         }
+
     }
 
     /**

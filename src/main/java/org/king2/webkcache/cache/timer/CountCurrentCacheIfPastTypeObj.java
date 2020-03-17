@@ -10,12 +10,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-/*=======================================================
-	说明:  计算当前缓存是否过期
-
-	作者		时间					            注释
-  	俞烨		19-10-14                         创建
-=======================================================*/
+/**
+ * @since 1.0
+ */
+@Deprecated
 public class CountCurrentCacheIfPastTypeObj {
 
     private CountCurrentCacheIfPastTypeObj() {
