@@ -65,6 +65,7 @@ public class DefaultWebKingCache implements WebKingCache {
         try {
             // 创建返回的数据
             CacheDefinition returnObj = null;
+
             // 校验通过首先获取到返回的值
             ConcurrentHashMap<String, CacheDefinition> data = lock.data;
 
@@ -173,7 +174,7 @@ public class DefaultWebKingCache implements WebKingCache {
     }
 
     @Override
-    public Object remove(String key) {
+    public Object remove(String key) throws Exception {
 
         if (SIZE.get() <= 0) {
             return null;
@@ -199,6 +200,12 @@ public class DefaultWebKingCache implements WebKingCache {
     @Override
     public int size() {
         return SIZE.get();
+    }
+
+
+    @Override
+    public boolean containsKey(String key) throws Exception {
+        return get(key) != null;
     }
 }
 

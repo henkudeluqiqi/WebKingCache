@@ -1,6 +1,5 @@
 package org.king2.webkcache.cache.timer;
 
-import org.king2.webkcache.cache.interfaces.impl.ConcurrentWebCache;
 import org.king2.webkcache.cache.interfaces.impl.DefaultWebKingCache;
 import org.king2.webkcache.cache.lock.SubSectionLock;
 import org.king2.webkcache.cache.pojo.ReadWritePojo;
@@ -56,8 +55,6 @@ public class DefaultWebKingCacheTimer {
                 Date currentData = new Date();
                 if (!CollectionUtils.isEmpty(TIME)) {
                     TIME.forEach((k, v) -> {
-                        // * 60 * 1000
-
                         // 获取锁
                         ReadWritePojo currentKeyLock = SubSectionLock.getLock(k);
                         currentKeyLock.reentrantReadWriteLock.writeLock().lock();

@@ -1,10 +1,9 @@
 package org.king2.webkcache.cache.test;
 
-import org.king2.webkcache.cache.interfaces.impl.DefaultWebKingCache;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /*=======================================================
@@ -15,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 =======================================================*/
 public class Demo {
 
-    /*public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException {
         ConcurrentHashMap c = new ConcurrentHashMap();
         AtomicInteger integer = new AtomicInteger();
         List<Thread> threads = new ArrayList<>();
@@ -42,9 +41,9 @@ public class Demo {
         long l1 = System.currentTimeMillis();
         System.out.println(l1 - l);
 
-    }*/
+    }
 
-    public static void main(String[] args) throws Exception {
+   /* public static void main(String[] args) throws Exception {
         AtomicInteger integer = new AtomicInteger();
         DefaultWebKingCache cache = new DefaultWebKingCache(10000);
         List<Thread> threads = new ArrayList<>();
@@ -82,7 +81,7 @@ public class Demo {
         l1 = System.currentTimeMillis();
         System.out.println(l1 - l);
         System.out.println(cache.size());
-    }
+    }*/
 
    /* public static void main(String[] args) throws Exception {
 

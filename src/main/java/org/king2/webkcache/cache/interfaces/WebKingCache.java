@@ -50,7 +50,7 @@ public interface WebKingCache {
     /**
      * 调用CacheRecycle缓存回收期
      */
-    void cr();
+    void cr() throws Exception;
 
     /**
      * 通过key获取值
@@ -60,7 +60,30 @@ public interface WebKingCache {
      */
     Object get(String key) throws Exception;
 
-    Object remove(String key);
+    /**
+     * 根据Key删除对应的数据
+     *
+     * @param key
+     * @return
+     */
+    Object remove(String key) throws Exception;
 
-    int size();
+    /**
+     * 算出总数据量
+     *
+     * @return
+     */
+    int size() throws Exception;
+
+
+    /**
+     * 是否包含这个key
+     *
+     * @param key
+     * @return
+     * @since 1.1
+     */
+    default boolean containsKey(String key) throws Exception {
+        return false;
+    }
 }
