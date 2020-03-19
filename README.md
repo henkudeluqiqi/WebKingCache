@@ -21,12 +21,29 @@
 # 版本更换
 V1.0 默认使用ConcurrentWebCache
     
-    如果需要使用`默认使用ConcurrentWebCache` 请在`Spring项目中`使用注解`@Autowried('concurrentCache')`
+    如果需要使用`默认使用ConcurrentWebCache` 请在`Spring项目中`使用注解`@Autowried` private WebKingCache concurrentCache;
     
 V1.1 废除ConcurrentWebCache使用DefaultWebCache
     
     使用方法(spring、spring-boot)
     1、开启WebKingCache对Spring项目的支持@EnableWebKingCache
-    2、@Autowried('defaultWebKingCache')
+    2、@Autowried('defaultWebKingCache') private WebKingCache defaultWebKingCache;
     使用方法(非Spring项目)
     DefaultWebKingCache defaultWebKingCache = new DefaultWebKingCache(可选: timeout);
+
+V1.2 在V1.1的基础上新增了HTTP模块，可以远程调用搭建好的WebKingCache服务器(CacheServer.jar)
+    
+    更新内容
+    1、实现了远程的CacheServer服务器(defaultPort: 7778)。
+    2、提供了掉线自动连接。
+    3、消息幂等性。
+    4、数据百分百发送。
+    
+    CacheServer的使用方式
+    1、找到WebKingCache项目->resouces->CacheServer.jar
+    2、输入命令行 java -Dcache-server=C://xx//...//XXX.properties -jar CacheServer.jar
+    3、cache-server为服务器的配置文件，如何使用请参照 WebKingCache项目->resouces->cache.properties
+    
+    使用方法(spring、spring-boot)
+    1、开启HttpWebKingCache对Spring项目的支持@EnableHttpWebKingCache
+    2、使用@Autowried private WebKingCache defaultHttpWebKingCache;
