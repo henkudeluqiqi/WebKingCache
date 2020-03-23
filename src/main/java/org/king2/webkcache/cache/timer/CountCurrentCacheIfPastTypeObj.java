@@ -49,7 +49,6 @@ public class CountCurrentCacheIfPastTypeObj {
      * 打开计时器后 会根据配置好的时间 每隔多久就会去监听一次数据是否需要呗删除
      * 如果当前数据不需要被删除那么就不会删除当前的这个数据
      * 反之 如果这个数据的缓存时间已经失效 那么就需要进行删除 否则数据留着就是浪费空间
-     * TODO 后期会将一级缓存升级为二级缓存
      * 升级为二级缓存后 那么一级缓存过期后的数据 就会进入二级缓存 如果二级缓存中时间又失效了 那么就真的将该数据移除
      */
     public static void openTimers() {
@@ -85,7 +84,6 @@ public class CountCurrentCacheIfPastTypeObj {
                                         // 判断时间是否超过现在的时间
                                         if (new Date(v.getTime() + WebKingCacheTypeIsObjDataCenter.timeout).compareTo(currentDate) < 0) {
 
-                                            // TODO 后期可以升级为二级缓存
                                             instance.getDatasMap().remove(k);
                                             timers.remove(k);
                                         }
@@ -93,8 +91,6 @@ public class CountCurrentCacheIfPastTypeObj {
                                 }
 
                             }
-
-                            // TODO 数据不一致
                             // 等于空 进入休眠状态
                             // 这个时间我们需要配置到缓存中去 因为失效的时间和检索的时间 都要交给用户去配置 而不是我们写死掉
                             WebKingCacheTypeIsObjectLock.writeCondition().await(WebKingCacheTypeIsObjDataCenter.timeout, TimeUnit.MILLISECONDS);

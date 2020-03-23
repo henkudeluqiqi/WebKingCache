@@ -20,7 +20,7 @@ public class SubSectionLock {
     /**
      * 分段锁的最高长度
      */
-    private static final Integer SUB_SECTION_LOCK_SIZE = 11;
+    public static final Integer SUB_SECTION_LOCK_SIZE = 11;
 
     /**
      * 当前容器是否已经初始化

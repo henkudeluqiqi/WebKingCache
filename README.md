@@ -40,10 +40,26 @@ V1.2 在V1.1的基础上新增了HTTP模块，可以远程调用搭建好的WebK
     4、数据百分百发送。
     
     CacheServer的使用方式
-    1、找到WebKingCache项目->resouces->CacheServer.jar
+    1、首先下载CacheServer.jar http:39
     2、输入命令行 java -Dcache-server=C://xx//...//XXX.properties -jar CacheServer.jar
     3、cache-server为服务器的配置文件，如何使用请参照 WebKingCache项目->resouces->cache.properties
     
     使用方法(spring、spring-boot)
     1、开启HttpWebKingCache对Spring项目的支持@EnableHttpWebKingCache
     2、使用@Autowried private WebKingCache defaultHttpWebKingCache;
+    
+V1.3 在V1.2的基础上增加了以下功能
+    
+    更新内容
+    1、更新了本地的持久化机制(非HTTP模式)。
+    2、项目启动时自动更新数据到本地内容。
+    
+    使用方法(spring、spring-boot)
+    在原有的V1.1基础上。
+    配置文件中配置
+    @Bean
+    public ServerProperties serverProperties() {
+        // oneValue 是否开启持久化机制
+        // twoValue 开启持久化机制后数据存入那个文件夹下(绝对路径)(存入的文件夹路径要自己创建)
+        return new ServerProperties(oneValue , twoValue);
+    }

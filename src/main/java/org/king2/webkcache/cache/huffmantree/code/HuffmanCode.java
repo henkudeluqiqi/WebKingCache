@@ -29,6 +29,7 @@ public class HuffmanCode {
 
     public static void main(String[] args) {
         createHuffmanCode("dasdas2313ralsdjokadjuauo123俞烨牛逼12312313sadaopdioadio dasdad");
+        System.out.println(SB.toString());
     }
 
     /**
@@ -46,8 +47,6 @@ public class HuffmanCode {
 
         // 通过一颗赫夫曼树得到他的赫夫曼编码
         buildHuffmanCodeBuilder(huffManTreeByHuffManWeight, "", SB);
-
-        System.out.println();
     }
 
 

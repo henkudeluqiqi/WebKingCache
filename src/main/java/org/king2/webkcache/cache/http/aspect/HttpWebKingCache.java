@@ -42,7 +42,7 @@ public class HttpWebKingCache implements WebKingCache {
      */
     public static final Map<String, RequestIsTimePojo> REQUEST_MAP = new ConcurrentHashMap<>();
 
-    private CacheClient defaultCacheClient;
+    private CacheClient defaultCacheClient = new CacheClient("172.20.10.8", 8888);
 
 
     public void start() throws Exception {
@@ -108,7 +108,7 @@ public class HttpWebKingCache implements WebKingCache {
 
     @Override
     public Object set(String key, Object value) throws Exception {
-        return set(key, value, false);
+        return set(key, value, true);
     }
 
     @Override
@@ -155,5 +155,9 @@ public class HttpWebKingCache implements WebKingCache {
 
     public void setDefaultCacheClient(CacheClient defaultCacheClient) {
         this.defaultCacheClient = defaultCacheClient;
+    }
+
+    public boolean containsKey(String key) throws Exception {
+        return get(key) != null;
     }
 }
