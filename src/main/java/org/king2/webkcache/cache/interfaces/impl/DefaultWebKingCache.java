@@ -3,6 +3,7 @@ package org.king2.webkcache.cache.interfaces.impl;
 import com.alibaba.fastjson.JSON;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j;
+
 import org.king2.webkcache.cache.appoint.WebCacheTypeIsObjAppoint;
 import org.king2.webkcache.cache.consumer.PrConsumer;
 import org.king2.webkcache.cache.definition.CacheDefinition;
@@ -259,11 +260,15 @@ public class DefaultWebKingCache implements WebKingCache {
         if (serverProperties.isActivePr()) {
             TaskThreadPool.getInstance().getPOOL().execute(() -> {
                 Thread.currentThread().setName("生产：同步数据线程" + System.currentTimeMillis());
+                // 获取到队列信息
                 ConcurrentLinkedQueue<PrData> prData = TaskThreadPool
                         .getInstance()
                         .get(key);
                 synchronized (prData) {
+
+                    // 算出阈值
                     Integer subSectionLockSize = SubSectionLock.SUB_SECTION_LOCK_SIZE;
+                    // 算出这个数据在文件中的行数
                     Integer value = RECORD_FILE_TOTLE_SIZE.get(subSectionLockSize);
                     RECORD_VALUE_LINE.get(key.hashCode() & subSectionLockSize).put(key, value == null ? 0 : value);
                     RECORD_FILE_TOTLE_SIZE.put(subSectionLockSize, value == null ? 0 : value + 1);

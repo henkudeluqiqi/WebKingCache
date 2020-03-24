@@ -13,14 +13,15 @@ public class TestPr {
 
     /**
      * 测试持久化
+     *
      * @throws Exception
      */
     @Test
     public void pr() throws Exception {
         DefaultWebKingCache defaultWebKingCache = new DefaultWebKingCache(100000
                 , new ServerProperties(true, "/Users/sam/luqiqi/codes/cacheData"));
-        for (int i = 0; i < 11; i++) {
-            defaultWebKingCache.set("U" + i, "de", true);
+        for (int i = 0; i < 1000000; i++) {
+            defaultWebKingCache.set("Y" + i, "de", true);
         }
 
         System.in.read();

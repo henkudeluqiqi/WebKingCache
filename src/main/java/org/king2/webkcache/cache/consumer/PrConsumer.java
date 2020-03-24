@@ -2,6 +2,7 @@ package org.king2.webkcache.cache.consumer;
 
 import com.alibaba.fastjson.JSON;
 import lombok.extern.log4j.Log4j;
+import org.king2.webkcache.cache.lock.SubSectionLock;
 import org.king2.webkcache.cache.pojo.PrData;
 import org.king2.webkcache.cache.task.TaskThreadPool;
 import org.xerial.snappy.Snappy;
@@ -10,7 +11,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 数据压缩的消费者
@@ -19,7 +23,16 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class PrConsumer {
 
 
+    /**
+     * 很久没有数据睡眠的时长
+     */
     public static final Integer WAIT_TIME = 1000 * 60 * 10;
+
+    /**
+     * 超过多少次没有数据就会长睡眠
+     */
+    public static final Integer MAX_SIZE = 50;
+    public static final AtomicInteger MAX_NO_DATA_SIZE = new AtomicInteger(0);
 
     public static final String PR_PATH = "/cache-king-data-";
 
@@ -56,14 +69,8 @@ public class PrConsumer {
                                 // 持久化到本地磁盘
                                 prDisk(zip, file);
                             }
-
-                            try {
-                                v.wait(WAIT_TIME);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-
                         }
+
                     });
                 });
 
