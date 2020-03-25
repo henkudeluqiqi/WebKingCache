@@ -26,9 +26,8 @@ public class RequestRetry {
                             RequestIsTimePojo remove = HttpWebKingCache.REQUEST_MAP.get(k);
                             if (remove != null) {
                                 // 重发前需要判断连接是否正常
-                                while (HttpWebKingCache.getInstance().isActive()) {
-                                    HttpWebKingCache.getInstance().send(remove.getCacheRequest());
-                                }
+                                while (!HttpWebKingCache.getInstance().isActive()) ;
+                                HttpWebKingCache.getInstance().send(remove.getCacheRequest());
                             }
 
                         }

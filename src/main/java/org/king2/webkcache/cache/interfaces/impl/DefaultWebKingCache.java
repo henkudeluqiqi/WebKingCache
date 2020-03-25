@@ -70,15 +70,20 @@ public class DefaultWebKingCache implements WebKingCache {
             // 并检查是否需要开启配置项
             File file = new File(serverProperties.getPrPath());
             if (serverProperties.isActivePr() && file.exists()) {
-                this.RECORD_VALUE_LINE = new ConcurrentHashMap<>();
+                // 我们需要进行初始化快照数据
+                serverProperties.setActivePr(true);
+                // 赋值缓存信息
+                this.serverProperties = serverProperties;
+
                 // 初始化RECORD_VALUE_LINE
                 for (Integer i = 0; i <= SubSectionLock.SUB_SECTION_LOCK_SIZE; i++) {
                     this.RECORD_VALUE_LINE.put(i, new ConcurrentHashMap<>());
                 }
+
+                // 初始化缓存的行数及其他信息
+                this.RECORD_VALUE_LINE = new ConcurrentHashMap<>();
                 this.RECORD_FILE_TOTLE_SIZE = new ConcurrentHashMap<>();
-                this.serverProperties = serverProperties;
-                // 我们需要进行初始化快照数据
-                serverProperties.setActivePr(true);
+
                 // 开启同步持久化的数据到本地内存当中
                 try {
                     openPrDataGotoMemory();
@@ -87,6 +92,7 @@ public class DefaultWebKingCache implements WebKingCache {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+
                 // 初始化压缩队列
                 TaskThreadPool.getInstance().init();
                 // 开启压缩消费者
@@ -115,7 +121,6 @@ public class DefaultWebKingCache implements WebKingCache {
                 files.add(file);
             }
         }
-
 
         // 获取到了所有的数据后 我们需要开始同步数据到缓存中
         if (CollectionUtils.isEmpty(files)) {
@@ -164,9 +169,9 @@ public class DefaultWebKingCache implements WebKingCache {
         for (Future task : tasks) {
             Object o = task.get();
             if (o != null) {
-                log.info("路径" + o + "同步成功");
+                log.info("WebKingCache缓存路径:" + o + "-同步成功");
             } else {
-                log.error("路径" + o + "同步失败");
+                log.error("WebKingCache缓存路径:" + o + "-同步失败");
             }
         }
     }
