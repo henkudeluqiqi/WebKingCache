@@ -1,6 +1,7 @@
 package org.king2.webkcache.cache.imports;
 
 import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j;
 import org.junit.Test;
 import org.king2.webkcache.cache.annotation.EnableWebKingCache;
 import org.king2.webkcache.cache.exceptions.BeanFactoryCaseError;
@@ -29,6 +30,7 @@ import java.util.List;
  * @author 俞烨        2019-11-18                         创建
  * =======================================================
  */
+@Log4j
 public class DynamicOpenWebKingCache implements ImportBeanDefinitionRegistrar {
 
     public static final String CACHE_POJO_PATH = "MATA-INF/cache-pojo.properties";
@@ -57,7 +59,7 @@ public class DynamicOpenWebKingCache implements ImportBeanDefinitionRegistrar {
                 }
             }
             // 创建WebKingCache的实例信息
-            parse(registry);
+            parse(registry, timeout);
         } else {
             try {
                 throw new BeanFactoryCaseError("BeanFactory转换异常");
@@ -68,7 +70,7 @@ public class DynamicOpenWebKingCache implements ImportBeanDefinitionRegistrar {
 
     }
 
-    public void parse(BeanDefinitionRegistry registry) throws Exception {
+    public void parse(BeanDefinitionRegistry registry, Integer timeout) throws Exception {
         String systemPath = this.getClass().getResource("/").getFile();
         File file = new File(systemPath + CACHE_POJO_PATH);
         // 读取文件
@@ -85,13 +87,19 @@ public class DynamicOpenWebKingCache implements ImportBeanDefinitionRegistrar {
             try {
                 String[] split = clazz.split("#");
                 Class<?> aClass = Class.forName(split[1]);
-                Object o = aClass.newInstance();
+                Object o = aClass.getConstructor(Integer.class).newInstance(timeout);
                 if (o instanceof DefaultWebKingCache) {
-                    DefaultWebKingCache defaultWebKingCache = (DefaultWebKingCache) o;
-                    defaultWebKingCache.serverProperties = ((DefaultListableBeanFactory) registry).getBean(ServerProperties.class);
+                    try {
+                        // 获取实例
+                        ServerProperties bean = ((DefaultListableBeanFactory) registry).getBean(ServerProperties.class);
+                        o = aClass.getConstructor(Integer.class, ServerProperties.class).newInstance(timeout, bean);
+                    } catch (Exception e) {
+                        log.warn("当前WebKingCache缓存没有打开持久化功能");
+                    }
                 }
                 ((DefaultListableBeanFactory) registry).registerSingleton(split[0], o);
             } catch (ClassNotFoundException e) {
+                e.printStackTrace();
             }
 
         }
