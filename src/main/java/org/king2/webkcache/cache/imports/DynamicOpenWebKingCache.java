@@ -2,24 +2,36 @@ package org.king2.webkcache.cache.imports;
 
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.king2.webkcache.cache.annotation.EnableWebKingCache;
 import org.king2.webkcache.cache.exceptions.BeanFactoryCaseError;
-import org.king2.webkcache.cache.interfaces.impl.ConcurrentWebCache;
+import org.king2.webkcache.cache.imports.interfaces.ExtendsService;
+import org.king2.webkcache.cache.imports.interfaces.service.DefaultExtendsServiceImpl;
 import org.king2.webkcache.cache.interfaces.impl.DefaultWebKingCache;
+import org.king2.webkcache.cache.pojo.Instantiation;
 import org.king2.webkcache.cache.pojo.ServerProperties;
+import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
+import org.springframework.core.io.UrlResource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.MultiValueMap;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.net.URL;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * =======================================================
@@ -30,10 +42,10 @@ import java.util.List;
  * @author 俞烨        2019-11-18                         创建
  * =======================================================
  */
-@Log4j
+@Slf4j
 public class DynamicOpenWebKingCache implements ImportBeanDefinitionRegistrar {
 
-    public static final String CACHE_POJO_PATH = "MATA-INF/cache-pojo.properties";
+    public static final String CACHE_POJO_PATH = "META-INF/cache-pojo.properties";
 
     @SneakyThrows
     @Override
@@ -60,6 +72,9 @@ public class DynamicOpenWebKingCache implements ImportBeanDefinitionRegistrar {
             }
             // 创建WebKingCache的实例信息
             parse(registry, timeout);
+
+            // 注册用户自己定义的实现类
+            registryUserExtendsService(registry);
         } else {
             try {
                 throw new BeanFactoryCaseError("BeanFactory转换异常");
@@ -70,34 +85,45 @@ public class DynamicOpenWebKingCache implements ImportBeanDefinitionRegistrar {
 
     }
 
+    private void registryUserExtendsService(BeanDefinitionRegistry registry) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+
+        if (registry instanceof ConfigurableListableBeanFactory) {
+            String[] beanNamesForType = ((ConfigurableListableBeanFactory) registry).getBeanNamesForType(ExtendsService.class);
+            for (String s : beanNamesForType) {
+                ExtendsService bean = (ExtendsService) ((ConfigurableListableBeanFactory) registry).getBean(s);
+                for (Instantiation addExtend : bean.addExtends()) {
+                    registry.registerBeanDefinition(addExtend.getKey(),
+                            new AnnotatedGenericBeanDefinition(Class.forName(addExtend.getClazz())));
+                }
+            }
+        }
+    }
+
     public void parse(BeanDefinitionRegistry registry, Integer timeout) throws Exception {
-        String systemPath = this.getClass().getResource("/").getFile();
-        File file = new File(systemPath + CACHE_POJO_PATH);
-        // 读取文件
-        FileReader fileReader = new FileReader(file);
-        BufferedReader bufferedReader = new BufferedReader(fileReader);
 
-        // 开始解析配置文件
-        String clazz = null;
-        while ((clazz = bufferedReader.readLine()) != null) {
 
-            String substring = clazz.substring(0, 1);
-            if ("#".equals(substring)) continue;
+        for (Instantiation addExtend : new DefaultExtendsServiceImpl().addExtends()) {
 
             try {
-                String[] split = clazz.split("#");
-                Class<?> aClass = Class.forName(split[1]);
+                Class<?> aClass = Class.forName(addExtend.getClazz());
                 Object o = aClass.getConstructor(Integer.class).newInstance(timeout);
                 if (o instanceof DefaultWebKingCache) {
+                    ServerProperties bean = null;
                     try {
                         // 获取实例
-                        ServerProperties bean = ((DefaultListableBeanFactory) registry).getBean(ServerProperties.class);
-                        o = aClass.getConstructor(Integer.class, ServerProperties.class).newInstance(timeout, bean);
+                        bean = ((DefaultListableBeanFactory) registry).getBean(ServerProperties.class);
                     } catch (Exception e) {
                         log.warn("当前WebKingCache缓存没有打开持久化功能");
+                        bean = new ServerProperties(false, "");
                     }
+                    ((DefaultWebKingCache) o).serverProperties = bean == null ?
+                            new ServerProperties() : bean;
+                    if (bean.isActivePr()) {
+                        ((DefaultWebKingCache) o).init();
+                    }
+
                 }
-                ((DefaultListableBeanFactory) registry).registerSingleton(split[0], o);
+                ((DefaultListableBeanFactory) registry).registerSingleton(addExtend.getKey(), o);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }

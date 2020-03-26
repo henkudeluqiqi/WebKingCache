@@ -2,6 +2,7 @@ package org.king2.webkcache.cache.consumer;
 
 import com.alibaba.fastjson.JSON;
 import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.king2.webkcache.cache.lock.SubSectionLock;
 import org.king2.webkcache.cache.pojo.PrData;
 import org.king2.webkcache.cache.task.TaskThreadPool;
@@ -19,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * 数据压缩的消费者
  */
-@Log4j
+@Slf4j
 public class PrConsumer {
 
 

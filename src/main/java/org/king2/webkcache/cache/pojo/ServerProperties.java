@@ -2,12 +2,14 @@ package org.king2.webkcache.cache.pojo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 服务器配置
  */
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class ServerProperties {
 
     // 是否启动了持久化机制

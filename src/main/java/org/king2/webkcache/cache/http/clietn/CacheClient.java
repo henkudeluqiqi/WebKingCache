@@ -6,6 +6,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.king2.webkcache.cache.http.aspect.HttpWebKingCache;
 import org.king2.webkcache.cache.http.encoding.RpcDecoder;
 import org.king2.webkcache.cache.http.encoding.RpcEncoder;
@@ -19,7 +20,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@Log4j
+@Slf4j
 public class CacheClient {
     private final String host;
     private final int port;

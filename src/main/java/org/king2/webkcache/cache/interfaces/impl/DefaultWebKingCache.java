@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j;
 
+import lombok.extern.slf4j.Slf4j;
 import org.king2.webkcache.cache.appoint.WebCacheTypeIsObjAppoint;
 import org.king2.webkcache.cache.consumer.PrConsumer;
 import org.king2.webkcache.cache.definition.CacheDefinition;
@@ -35,7 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author 俞烨        19-10-14                         创建
  * =======================================================
  */
-@Log4j
+@Slf4j
 public class DefaultWebKingCache implements WebKingCache {
 
     // 提供超时的构造
@@ -70,39 +71,44 @@ public class DefaultWebKingCache implements WebKingCache {
             // 并检查是否需要开启配置项
             File file = new File(serverProperties.getPrPath());
             if (serverProperties.isActivePr() && file.exists()) {
-                // 我们需要进行初始化快照数据
-                serverProperties.setActivePr(true);
-                // 赋值缓存信息
-                this.serverProperties = serverProperties;
-
-                // 初始化RECORD_VALUE_LINE
-                for (Integer i = 0; i <= SubSectionLock.SUB_SECTION_LOCK_SIZE; i++) {
-                    this.RECORD_VALUE_LINE.put(i, new ConcurrentHashMap<>());
-                }
-
-                // 初始化缓存的行数及其他信息
-                this.RECORD_VALUE_LINE = new ConcurrentHashMap<>();
-                this.RECORD_FILE_TOTLE_SIZE = new ConcurrentHashMap<>();
-
-                // 开启同步持久化的数据到本地内存当中
-                try {
-                    openPrDataGotoMemory();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                // 初始化压缩队列
-                TaskThreadPool.getInstance().init();
-                // 开启压缩消费者
-                PrConsumer.openConsumer();
+                init();
             } else {
                 serverProperties.setActivePr(false);
             }
         } else {
+            serverProperties = new ServerProperties();
             serverProperties.setActivePr(false);
         }
+    }
+
+    public void init() {
+        // 我们需要进行初始化快照数据
+        serverProperties.setActivePr(true);
+        // 赋值缓存信息
+        this.serverProperties = serverProperties;
+
+        // 初始化缓存的行数及其他信息
+        this.RECORD_VALUE_LINE = new ConcurrentHashMap<>();
+        this.RECORD_FILE_TOTLE_SIZE = new ConcurrentHashMap<>();
+
+        // 初始化RECORD_VALUE_LINE
+        for (Integer i = 0; i <= SubSectionLock.SUB_SECTION_LOCK_SIZE; i++) {
+            this.RECORD_VALUE_LINE.put(i, new ConcurrentHashMap<>());
+        }
+
+        // 开启同步持久化的数据到本地内存当中
+        try {
+            openPrDataGotoMemory();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // 初始化压缩队列
+        TaskThreadPool.getInstance().init();
+        // 开启压缩消费者
+        PrConsumer.openConsumer();
     }
 
     /**
@@ -262,7 +268,7 @@ public class DefaultWebKingCache implements WebKingCache {
      */
     private void prDataGotoFile(final String key, final CacheDefinition cacheDefinition) {
 
-        if (serverProperties.isActivePr()) {
+        if (serverProperties != null && serverProperties.isActivePr()) {
             TaskThreadPool.getInstance().getPOOL().execute(() -> {
                 Thread.currentThread().setName("生产：同步数据线程" + System.currentTimeMillis());
                 // 获取到队列信息
