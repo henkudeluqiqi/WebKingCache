@@ -9,7 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <description>
-        这是一个缓存Jar包 以后会依赖这个Jar包升级成一个缓存服务器!!!!
+        WebKingCache新版本
     </description>
 
     <properties>
@@ -28,12 +28,6 @@
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
             <version>1.2.51</version>
-        </dependency>
-        <!-- Netty依赖 -->
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-            <version>4.1.16.Final</version>
         </dependency>
         <!-- Spring-web -->
         <dependency>
