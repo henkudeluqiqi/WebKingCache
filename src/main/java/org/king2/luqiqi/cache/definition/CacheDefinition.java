@@ -15,18 +15,16 @@ import org.king2.luqiqi.cache.realize.DefaultCache;
 public class CacheDefinition {
 
     public CacheDefinition(String key, Object cacheValue, Long timeout) {
-        this.cacheValue = cacheValue;
 
         // 判断是否打开了过期
-        if (timeout == null || timeout <= 0) {
-            this.isOpenExpired = false;
-        } else {
+        if (timeout != null && timeout > 0) {
             this.isOpenExpired = true;
             // 添加一个需要监听的过期Key
             synchronized (DefaultCacheData.getInstance().expiredKeys) {
                 DefaultCacheData.getInstance().expiredKeys.add(key);
             }
         }
+        this.cacheValue = cacheValue;
         this.timeout = timeout;
     }
 
@@ -41,7 +39,7 @@ public class CacheDefinition {
     /**
      * 该缓存是否需要监听过期
      */
-    private boolean isOpenExpired;
+    private boolean isOpenExpired = false;
 
     /***
      * 当前存入的时间戳，用来计算过期key的一个时间

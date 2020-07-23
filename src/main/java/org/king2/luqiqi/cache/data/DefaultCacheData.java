@@ -1,11 +1,8 @@
 package org.king2.luqiqi.cache.data;
 
-import lombok.Data;
-import org.king2.luqiqi.cache.realize.DefaultCache;
 import org.springframework.util.Assert;
 
 import java.util.*;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -41,7 +38,7 @@ public class DefaultCacheData {
     /****
      * 数据存放的容器
      */
-    public final Map<Integer, Map<String, Object>> defaultCache =
+    public final Map<String, Object> defaultCache =
             new HashMap<>();
 
     /***

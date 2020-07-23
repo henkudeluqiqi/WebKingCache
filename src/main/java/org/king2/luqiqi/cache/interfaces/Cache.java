@@ -13,7 +13,12 @@ import java.io.File;
  */
 public interface Cache {
 
-
+    /**
+     * 将数据存入缓存中的接口
+     *
+     * @param key   key
+     * @param value 值
+     */
     void set(String key, Object value);
 
 

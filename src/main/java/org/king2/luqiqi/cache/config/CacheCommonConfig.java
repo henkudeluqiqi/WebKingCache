@@ -10,7 +10,7 @@ package org.king2.luqiqi.cache.config;
 public class CacheCommonConfig {
 
     /***
-     * 缓存类最大的一个占用内存
+     * 缓存类最大的一个占用内存(对象数量)
      */
-    public final static Long MAX_CACHE_MEMORY = 10L;
+    public final static Long MAX_CACHE_MEMORY = 10000000L;
 }

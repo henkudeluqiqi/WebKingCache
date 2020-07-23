@@ -13,6 +13,6 @@ public class CacheSizeUpperLimitException extends Exception {
 
 
     public CacheSizeUpperLimitException() {
-        super("缓存池已满");
+        super("缓存池拒绝添加，原因：缓存池已满。");
     }
 }
