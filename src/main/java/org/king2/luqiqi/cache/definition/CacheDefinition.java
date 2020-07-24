@@ -2,7 +2,6 @@ package org.king2.luqiqi.cache.definition;
 
 import lombok.Getter;
 import org.king2.luqiqi.cache.data.DefaultCacheData;
-import org.king2.luqiqi.cache.realize.DefaultCache;
 
 /**
  * 项目名称：CACHE-KING2-V1.0

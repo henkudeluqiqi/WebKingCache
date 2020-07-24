@@ -1,6 +1,5 @@
 package org.king2.luqiqi.cache.realize;
 
-import com.alibaba.fastjson.JSON;
 import org.king2.luqiqi.cache.config.CacheCommonConfig;
 import org.king2.luqiqi.cache.data.DefaultCacheData;
 import org.king2.luqiqi.cache.definition.CacheDefinition;
@@ -10,7 +9,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -23,6 +21,26 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * 创 建 人：俞烨-company-mac
  */
 public class DefaultCache implements Cache {
+
+    private DefaultCache() {
+        // 初始化定时任务
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(1000 * 60 * 10);
+                    clear();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    private static final DefaultCache DEFAULT_CACHE = new DefaultCache();
+
+    public static DefaultCache getInstance() {
+        return DEFAULT_CACHE;
+    }
 
 
     /***
@@ -37,6 +55,132 @@ public class DefaultCache implements Cache {
     @Override
     public void set(String key, Object value) {
         set(key, null, value);
+    }
+
+    /****
+     * 通过key，获取一个缓存对象
+     * 获取的途中有几率会触发淘汰机制，如果这个key过期了就会讲这个数据清空
+     * @param key
+     * @param clazz
+     * @param <T>
+     * @return
+     */
+    @Override
+    public <T> T get(String key, Class<T> clazz) {
+
+        // 判断Key是否为空
+        Assert.notNull(key, "Key不能为空");
+
+        // 加锁
+        DefaultCacheData instance = DefaultCacheData.getInstance();
+        ReentrantReadWriteLock lock = instance.getLock(key);
+        lock.readLock().lock();
+        boolean isUnReadLock = false;
+        try {
+            CacheDefinition cacheDefinition = (CacheDefinition) instance.defaultCache.get(key);
+            if (cacheDefinition == null) {
+                return null;
+            }
+
+            // 判断是否开启了监听过期机制或者需要判断这个缓存是否已经过期了，如果过期了需要清理
+            if (!cacheDefinition.isOpenExpired() ||
+                    cacheDefinition.getTimestamp() + cacheDefinition.getTimeout() > System.currentTimeMillis()) {
+                return (T) cacheDefinition.getCacheValue();
+            }
+            isUnReadLock = expiredDelCache(key, instance, lock);
+
+            return null;
+        } finally {
+            if (!isUnReadLock) lock.readLock().unlock();
+            if (isUnReadLock) lock.writeLock().unlock();
+        }
+
+    }
+
+    /***
+     * 过期后删除一个缓存
+     * @param key       key
+     * @param instance  实例
+     * @param lock          锁
+     * @return
+     */
+    private boolean expiredDelCache(String key, DefaultCacheData instance,
+                                    ReentrantReadWriteLock lock) {
+        // 说明过期了 需要进行清理
+        lock.readLock().unlock();
+        lock.writeLock().lock();
+        if (instance.defaultCache.remove(key) != null) DefaultCacheData.getInstance().minusCacheSize();
+        // 删除监听的set集合
+        synchronized (DefaultCacheData.getInstance().expiredKeys) {
+            DefaultCacheData.getInstance().expiredKeys.remove(key);
+        }
+        return true;
+    }
+
+    /***
+     * 删除一个缓存的信息
+     * @param key
+     */
+    @Override
+    public void remove(String key) {
+        // 判断Key是否为空
+        Assert.notNull(key, "Key不能为空");
+
+        // 加锁
+        DefaultCacheData instance = DefaultCacheData.getInstance();
+        ReentrantReadWriteLock lock = instance.getLock(key);
+        lock.writeLock().lock();
+        try {
+
+            // 删除对应的数据信息
+            if (instance.defaultCache.remove(key) != null) {
+                instance.minusCacheSize();
+            }
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    @Override
+    public boolean exits(String key) {
+        return get(key, Object.class) != null;
+    }
+
+    @Override
+    public Long ttl(String key) {
+
+        // 判断Key是否为空
+        Assert.notNull(key, "Key不能为空");
+
+        // 加锁
+        DefaultCacheData instance = DefaultCacheData.getInstance();
+        ReentrantReadWriteLock lock = instance.getLock(key);
+        lock.readLock().lock();
+        boolean isUnReadLock = false;
+        try {
+            CacheDefinition cacheDefinition = (CacheDefinition) instance.defaultCache.get(key);
+            if (cacheDefinition == null) {
+                return 0L;
+            }
+
+            // 判断是否开启了监听过期机制或者需要判断这个缓存是否已经过期了，如果过期了需要清理
+            long currentTimeMillis = System.currentTimeMillis();
+            if (!cacheDefinition.isOpenExpired() ||
+                    cacheDefinition.getTimestamp() + cacheDefinition.getTimeout() > currentTimeMillis) {
+                return (cacheDefinition.getTimestamp() + cacheDefinition.getTimeout()) - currentTimeMillis;
+            }
+            isUnReadLock = expiredDelCache(key, instance, lock);
+
+            return 0L;
+        } finally {
+            if (!isUnReadLock) lock.readLock().unlock();
+            if (isUnReadLock) lock.writeLock().unlock();
+        }
+    }
+
+    @Override
+    public void setEx(String key, long timeout, Object value) {
+        set(key, timeout, value);
     }
 
     /***
@@ -80,14 +224,6 @@ public class DefaultCache implements Cache {
         }
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        DefaultCache defaultCache = new DefaultCache();
-        defaultCache.set("123", new Object());
-        Thread.sleep(2000);
-        Object o = defaultCache.get("123", Object.class);
-        o = defaultCache.get("123", Object.class);
-    }
-
     /***
      * 添加到缓存中
      * @param key
@@ -109,47 +245,6 @@ public class DefaultCache implements Cache {
             instance.setCacheSize();
         }
         instance.defaultCache.put(index, cacheMap);*/
-    }
-
-    @Override
-    public <T> T get(String key, Class<T> clazz) {
-
-        // 判断Key是否为空
-        Assert.notNull(key, "Key不能为空");
-
-        // 加锁
-        DefaultCacheData instance = DefaultCacheData.getInstance();
-        ReentrantReadWriteLock lock = instance.getLock(key);
-        lock.readLock().lock();
-        boolean isUnReadLock = false;
-        try {
-            CacheDefinition cacheDefinition = (CacheDefinition) instance.defaultCache.get(key);
-            if (cacheDefinition == null) {
-                return null;
-            }
-
-            // 判断是否开启了监听过期机制或者需要判断这个缓存是否已经过期了，如果过期了需要清理
-            if (!cacheDefinition.isOpenExpired() ||
-                    cacheDefinition.getTimestamp() + cacheDefinition.getTimeout() > System.currentTimeMillis()) {
-                return (T) cacheDefinition.getCacheValue();
-            }
-
-            // 说明过期了 需要进行清理
-            lock.readLock().unlock();
-            isUnReadLock = true;
-            lock.writeLock().lock();
-            instance.defaultCache.remove(key);
-            DefaultCacheData.getInstance().minusCacheSize();
-            // 删除监听的set集合
-            synchronized (DefaultCacheData.getInstance().expiredKeys) {
-                DefaultCacheData.getInstance().expiredKeys.remove(key);
-            }
-            return null;
-        } finally {
-            if (!isUnReadLock) lock.readLock().unlock();
-            if (isUnReadLock) lock.writeLock().unlock();
-        }
-
     }
 
 

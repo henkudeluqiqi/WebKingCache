@@ -12,5 +12,10 @@ public class CacheCommonConfig {
     /***
      * 缓存类最大的一个占用内存(对象数量)
      */
-    public final static Long MAX_CACHE_MEMORY = 10000000L;
+    public static Long MAX_CACHE_MEMORY = 10000000L;
+
+    /***
+     * 是否开启持久化
+     */
+    public static boolean PERSISTENCE = false;
 }

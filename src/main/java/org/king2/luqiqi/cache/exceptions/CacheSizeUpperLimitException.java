@@ -1,7 +1,5 @@
 package org.king2.luqiqi.cache.exceptions;
 
-import org.king2.luqiqi.cache.interfaces.Cache;
-
 /**
  * 项目名称：CACHE-KING2-V1.0
  * 类 名 称：CacheSizeUpperLimitException

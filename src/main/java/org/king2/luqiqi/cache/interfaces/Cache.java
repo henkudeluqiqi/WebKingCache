@@ -1,9 +1,5 @@
 package org.king2.luqiqi.cache.interfaces;
 
-import com.alibaba.fastjson.JSON;
-
-import java.io.File;
-
 /**
  * 项目名称：CACHE-KING2-V1.0
  * 类 名 称：Cache
@@ -32,8 +28,8 @@ public interface Cache {
         return false;
     }
 
-    default boolean expired(String key) {
-        return false;
+    default Long ttl(String key) {
+        return 0L;
     }
 
     default void setEx(String key, long timeout, Object value) {
