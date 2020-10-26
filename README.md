@@ -27,7 +27,7 @@ V1.1 废除ConcurrentWebCache使用DefaultWebCache
     
     使用方法(spring、spring-boot)
     1、开启WebKingCache对Spring项目的支持@EnableWebKingCache
-    2、@Autowried('defaultWebKingCache') private WebKingCache defaultWebKingCache;
+    2、@Autowried private WebKingCache defaultWebKingCache;
     使用方法(非Spring项目)
     DefaultWebKingCache defaultWebKingCache = new DefaultWebKingCache(可选: timeout);
 
